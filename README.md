@@ -106,6 +106,10 @@ ChatIO is a modern real-time chat application built with React, Node.js, Express
 
 MIT
 
+## Author
+
+Gaurav Kumar Singh
+
 ---
 
-**Made with ❤️ for learning and
+**Made with ❤️ for learning and chatting!**
