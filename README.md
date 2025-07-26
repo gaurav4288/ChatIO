@@ -108,7 +108,7 @@ MIT
 
 ## Author
 
-Gaurav Kumar Singh
+[Gaurav Kumar Singh](https://github.com/gaurav4288)
 
 ---
 
