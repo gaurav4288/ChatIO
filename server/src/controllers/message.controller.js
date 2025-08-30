@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
 
-import cloudinary from "../lib/cloudinary.js";
+import { uploadOnCloudinary } from "../lib/cloudinary.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
 
 export const getUsersForSidebar = async (req, res) => {
@@ -37,22 +37,30 @@ export const getMessages = async (req, res) => {
 
 export const sendMessage = async (req, res) => {
   try {
-    const { text, image } = req.body;
+    const { text } = req.body;
+    const mediaLocalPath = req.file?.path;
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
-    let imageUrl;
-    if (image) {
-      // Upload base64 image to cloudinary
-      const uploadResponse = await cloudinary.uploader.upload(image);
-      imageUrl = uploadResponse.secure_url;
+    let mediaUrl;
+    let mediaType;
+    
+    if (mediaLocalPath) {
+      const uploadResponse = await uploadOnCloudinary(mediaLocalPath);
+      mediaUrl = uploadResponse?.url;
+      
+      // Determine media type based on file extension or MIME type
+      const fileExtension = req.file.originalname.split('.').pop().toLowerCase();
+      const isVideo = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'].includes(fileExtension);
+      mediaType = isVideo ? 'video' : 'image';
     }
 
     const newMessage = new Message({
       senderId,
       receiverId,
       text,
-      image: imageUrl,
+      media: mediaUrl,
+      mediaType,
     });
 
     await newMessage.save();
